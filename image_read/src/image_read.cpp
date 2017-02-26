@@ -1,4 +1,7 @@
-﻿
+﻿#include <iostream>
+#include <string>
+#include <sstream>
+
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
@@ -7,11 +10,17 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+
 using namespace std;
 using namespace cv;
 
 void imageCallback(const cv_bridge::CvImage::ConstPtr &imgMsg);
 void depthCallback(const cv_bridge::CvImage::ConstPtr &depthMsg);
+
+string rgbFileName = "";
+string depthFileName = "";
+long rgbNum = 0;
+long depthNum = 0;
 
 int main(int argc, char *argv[])
 {
@@ -22,7 +31,7 @@ int main(int argc, char *argv[])
 
     //subscribe the image from the Kinect
     imgSub   = nh.subscribe("/camera/rgb/image_color", 5, imageCallback);
-    depthSub = nh.subscribe("/camera/depth/image_raw",5,depthCallback);
+    depthSub = nh.subscribe("/camera/depth_registered/image",5,depthCallback);
 
     ros::spin();
     return 0;
@@ -35,10 +44,18 @@ void imageCallback(const cv_bridge::CvImage::ConstPtr &imgMsg)
 {
     Mat inImage;
     inImage = imgMsg->image;
-    //cout << "The encoding of image is: " << imgMsg->encoding << endl;
 
-    imshow("image_from_kinect", inImage);
+    vector<int> compressionQuality;
+    compressionQuality.push_back(9);
+    //cout << "The encoding of image is: " << imgMsg->encoding << endl;
+    //imshow("image_from_kinect", inImage);
+    stringstream ss;
+    ss << rgbNum;
+    rgbFileName = "/home/m/ws/src/ros_projects/rgb/rgb_" + ss.str() + ".png";
+    imwrite(rgbFileName, inImage, compressionQuality);
+    cout << "write " << "  rgb_" << ss.str() << " suscessfully!" << endl;
     waitKey(30);
+    rgbNum += 1;
 }
 /**
  * @brief depthCallback
@@ -48,6 +65,14 @@ void depthCallback(const cv_bridge::CvImage::ConstPtr &depthMsg)
 {
     Mat depthImage(depthMsg->image.cols,depthMsg->image.rows, CV_32FC1);
     depthImage = depthMsg->image;
-    imshow("depth_from_kinect",depthImage);
+    vector<int> pgmFormat;
+    pgmFormat.push_back(0);
+    stringstream ss;
+    ss << depthNum;
+    depthFileName = "/home/m/ws/src/ros_projects/depth/depth_" + ss.str() + ".pgm";
+    imwrite(depthFileName, depthImage, pgmFormat);
+    cout << "write " << "depth_" << ss.str() << " suscessfully!" << endl;
+    //imshow("depth_from_kinect",depthImage);
     waitKey(30);
+    depthNum += 1;
 }
