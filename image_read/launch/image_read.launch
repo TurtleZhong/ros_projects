@@ -1,0 +1,5 @@
+<launch>
+   <node pkg="image_read" name="image_read" type="image_read">
+   <param name="save_image" type="int" value="1" />
+   </node>
+</launch>
