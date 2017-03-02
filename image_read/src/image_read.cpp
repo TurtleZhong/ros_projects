@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
         if(param == "-s")
         {
             save_image = true;
+            cout << "saving image sequence....." << endl;
         }
     }
     sleep(1);
@@ -51,6 +52,9 @@ int main(int argc, char *argv[])
     ros::spin();
     return 0;
 }
+
+
+
 /**
  * @brief imageCallback
  * @param imgMsg
@@ -94,15 +98,18 @@ void depthCallback(const cv_bridge::CvImage::ConstPtr &depthMsg)
         depthNum += 1;
     }
     //cout << "the value of save_image is :" << save_image << endl;
-    imshow("depth_from_kinect",depthImage);
+    //imshow("depth_from_kinect",depthImage);
     waitKey(30);
 }
 
 
 void showHelp()
 {
+
     cout << "***********Author: Mr.zhong*************" << endl;
     cout << "This node is presented to get rgb and depth image from Kinect V1." << endl;
     cout << "The image is synchronized in time, So you can use rosrun image_read image_read -s to save both image!" << endl;
     cout << "-s " << "save image in the project directory." << endl;
+    cout << "if this code do not save image, Please check weather you have open the kinect!" << endl;
+    cout << "usually use roslaunch freenect_launch *** to start Kinect V1." << endl;
 }
