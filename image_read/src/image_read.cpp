@@ -70,7 +70,7 @@ void imageCallback(const cv_bridge::CvImage::ConstPtr &imgMsg)
     //imshow("image_from_kinect", inImage);
     stringstream ss;
     ss << rgbNum;
-    rgbFileName = "/home/m/ws/src/ros_projects/rgb/rgb_" + ss.str() + ".png";
+    rgbFileName = "/home/m/ws/src/ros_projects/dataset/rgb_my/" + ss.str() + ".png";
     if(save_image)
     {
         imwrite(rgbFileName, inImage, compressionQuality);
@@ -87,14 +87,14 @@ void depthCallback(const cv_bridge::CvImage::ConstPtr &depthMsg)
 {
     Mat depthImage(depthMsg->image.cols,depthMsg->image.rows, CV_16UC1);
     depthImage = depthMsg->image;
-    vector<int> pgmFormat;
-    pgmFormat.push_back(CV_IMWRITE_PXM_BINARY);
+    vector<int> compressionQuality;
+    compressionQuality.push_back(CV_IMWRITE_PNG_COMPRESSION);
     stringstream ss;
     ss << depthNum;
-    depthFileName = "/home/m/ws/src/ros_projects/depth/depth_" + ss.str() + ".pgm";
+    depthFileName = "/home/m/ws/src/ros_projects/dataset/depth_my/" + ss.str() + ".png";
     if(save_image)
     {
-        imwrite(depthFileName, depthImage, pgmFormat);
+        imwrite(depthFileName, depthImage, compressionQuality);
         //cout << "write " << "depth_" << ss.str() << " suscessfully!" << endl;
         depthNum += 1;
     }

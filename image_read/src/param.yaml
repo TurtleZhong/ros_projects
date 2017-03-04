@@ -1,2 +1,10 @@
 %YAML:1.0
 rgb_path: "/home/m/ws/src/ros_projects/rgb/"
+
+# camera
+camera.cx=325.5;
+camera.cy=253.5;
+camera.fx=518.0;
+camera.fy=519.0;
+camera.scale=1000.0;
+

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(image_read)
-
+SET(CMAKE_CXX_COMPILER "g++")
+SET( CMAKE_BUILD_TYPE Release )
+SET( CMAKE_CXX_FLAGS "-O3 -std=c++11" )
 ## Add support for C++11, supported in ROS Kinetic and newer
 # add_definitions(-std=c++11)
 
@@ -14,11 +16,37 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
+  message_filters
+  
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system)
 find_package(OpenCV REQUIRED)
+
+# 增加PCL库的依赖
+FIND_PACKAGE( PCL REQUIRED )
+#list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4") # use this in Ubuntu 16.04
+
+
+# 添加头文件和库文件
+#ADD_DEFINITIONS( ${PCL_DEFINITIONS} )
+#INCLUDE_DIRECTORIES( ${PCL_INCLUDE_DIRS}  )
+#LINK_LIBRARIES( ${PCL_LIBRARY_DIRS} )
+include_directories ( ${OpenCV_INCLUDE_DIRS})
+include_directories ( ${PCL_INCLUDE_DIRS} )
+include_directories ("/usr/local/include/eigen3")
+add_definitions(${PCL_DEFINITIONS})
+
+
+# 添加g2o的依赖
+# 因为g2o不是常用库，要添加它的findg2o.cmake文件
+LIST( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules )
+#SET( G2O_ROOT /usr/local )
+FIND_PACKAGE( G2O REQUIRED )
+# CSparse
+FIND_PACKAGE( CSparse REQUIRED )
+INCLUDE_DIRECTORIES( ${G2O_INCLUDE_DIR} ${CSPARSE_INCLUDE_DIR} )
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -119,7 +147,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-include_directories(
+include_directories(include ${Boost_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -127,6 +155,11 @@ include_directories(
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/image_read.cpp
 # )
+
+ADD_LIBRARY( slam_base src/slam_base.cpp )
+TARGET_LINK_LIBRARIES( slam_base
+    ${OpenCV_LIBS} 
+    ${PCL_LIBRARIES} )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -204,3 +237,14 @@ include_directories(
 # catkin_add_nosetests(test)
 add_executable(image_read src/image_read.cpp )
 target_link_libraries(image_read ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+add_executable(feature_detect src/feature_detect.cpp )
+target_link_libraries(feature_detect ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
+ADD_EXECUTABLE( slam src/slam.cpp )
+TARGET_LINK_LIBRARIES( slam
+    slam_base
+    ${OpenCV_LIBS}
+    ${PCL_LIBRARIES}
+    g2o_core g2o_types_slam3d g2o_solver_csparse g2o_stuff g2o_csparse_extension ${CSPARSE_LIBRARY})
+
+
