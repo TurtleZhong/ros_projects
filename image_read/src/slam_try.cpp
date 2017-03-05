@@ -1,9 +1,37 @@
-﻿
+﻿#include "slam_try.h"
+
+
 /*************************************************************************
-    > Implementation of slam_base.h
-    > Created Time: 2015年07月18日 星期六 15时31分49秒
+    > Implementation of slam_try.h
+    > Created Time: 2017年03月06日 星期六 15时31分49秒
  ************************************************************************/
-#include "slam_base.h"
+
+bool CAMERA_INTRINSIC_PARAMETERS::getCameraParam()
+{
+    FileStorage fs("/home/m/ws/src/ros_projects/image_read/src/param.yaml", FileStorage::READ);
+    fs["camera.cx"] >> this->cx;
+    fs["camera.cy"] >> this->cy;
+    fs["camera.fx"] >> this->fx;
+    fs["camera.fy"] >> this->fy;
+    fs["camera.scale"] >> this->scale;
+    fs.release();
+    return true;
+}
+
+/*This function need to fix */
+cv::Mat CAMERA_INTRINSIC_PARAMETERS::creatCameraMatrix()
+{
+    double camera_matrix_data[3][3] = {
+        {this->fx, 0, this->cx},
+        {0, this->fy, this->cy},
+        {0, 0, 1}
+    };
+    // creatCameraMatrix
+    cv::Mat cameraMatrix( 3, 3, CV_64F, camera_matrix_data );
+    cout << cameraMatrix << endl;
+    return cameraMatrix;
+}
+
 PointCloud::Ptr image2PointCloud( cv::Mat& rgb, cv::Mat& depth, CAMERA_INTRINSIC_PARAMETERS& camera )
 {
     PointCloud::Ptr cloud ( new PointCloud );
@@ -77,33 +105,58 @@ void computeKeyPointsAndDesp( FRAME& frame, string detector, string descriptor )
 RESULT_OF_PNP estimateMotion( FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARAMETERS& camera )
 {
     static ParameterReader pd;
-    vector< cv::DMatch > matches;
-    cv::BFMatcher matcher;
-    matcher.match( frame1.desp, frame2.desp, matches );
+    //    vector< cv::DMatch > matches;
+    //    cv::BFMatcher matcher;
+    //    matcher.match( frame1.desp, frame2.desp, matches );
 
     RESULT_OF_PNP result;
-    vector< cv::DMatch > goodMatches;
-    double minDis = 9999;
-    double good_match_threshold = atof( pd.getData( "good_match_threshold" ).c_str() );
-    for ( size_t i=0; i<matches.size(); i++ )
-    {
-        if ( matches[i].distance < minDis )
-            minDis = matches[i].distance;
-    }
+    //    vector< cv::DMatch > goodMatches;
 
-    if ( minDis < 10 )
-        minDis = 10;
 
-    for ( size_t i=0; i<matches.size(); i++ )
+    /*
+     * FLANN
+     */
+    flann::Index flannIndex(frame1.desp, flann::LshIndexParams(12, 20, 2), cvflann::FLANN_DIST_HAMMING);
+
+    /*Match the feature*/
+    Mat matchIndex(frame2.desp.rows, 2, CV_32SC1);
+    Mat matchDistance(frame2.desp.rows, 2, CV_32SC1);
+    flannIndex.knnSearch(frame1.desp, matchIndex, matchDistance, 2, flann::SearchParams());
+
+    vector<DMatch> goodMatches;
+    for (int i = 0; i < matchDistance.rows; i++)
     {
-        if (matches[i].distance < good_match_threshold*minDis)
-            goodMatches.push_back( matches[i] );
+        if(matchDistance.at<float>(i,0) < 0.6 * matchDistance.at<float>(i, 1))
+        {
+            DMatch dmatchs(i, matchIndex.at<int>(i,0), matchDistance.at<float>(i,1));
+            goodMatches.push_back(dmatchs);
+        }
     }
+    cout << "We got " << goodMatches.size() << " good Matchs" << endl;
+
+
+//        double minDis = 9999;
+//        double good_match_threshold = atof( pd.getData( "good_match_threshold" ).c_str() );
+//        for ( size_t i=0; i<matches.size(); i++ )
+//        {
+//            if ( matches[i].distance < minDis )
+//                minDis = matches[i].distance;
+//        }
+
+//        if ( minDis < 10 )
+//            minDis = 10;
+
+//        for ( size_t i=0; i<matches.size(); i++ )
+//        {
+//            if (matches[i].distance < good_match_threshold*minDis)
+//                goodMatches.push_back( matches[i] );
+//        }
 
     Mat resultImage;
     drawMatches(frame2.rgb, frame2.kp, frame1.rgb, frame1.kp, goodMatches, resultImage);
     imshow("result of Image", resultImage);
     cout << "We got " << goodMatches.size() << " good Matchs" << endl;
+    imshow("keyFrame",frame1.rgb);
 
 
 

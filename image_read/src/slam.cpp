@@ -101,6 +101,9 @@ int main( int argc, char** argv )
         FRAME currFrame = readFrame( currIndex,pd ); // 读取currFrame
         computeKeyPointsAndDesp( currFrame, detector, descriptor ); //提取特征
         CHECK_RESULT result = checkKeyframes( keyframes.back(), currFrame, globalOptimizer ); //匹配该帧与keyframes里最后一帧
+
+
+        cout << "The index of KeyFrame is " << keyframes.size() << endl;
         switch (result) // 根据匹配结果不同采取不同策略
         {
         case NOT_MATCHED:
@@ -121,9 +124,6 @@ int main( int argc, char** argv )
             //Eigen::Isometry3d T = cvMat2Eigen( result.rvec, result.tvec );
             //cout<<"T="<<T.matrix()<<endl;
 
-//            cloud = joinPointCloud( cloud, currFrame, T, camera );
-//            if ( visualize == true )
-//                viewer.showCloud( cloud );
             /**
              * This is important!!
              * This is important!!
@@ -137,13 +137,14 @@ int main( int argc, char** argv )
                 checkRandomLoops( keyframes, currFrame, globalOptimizer );
             }
             keyframes.push_back( currFrame );
+            cout << "The index of KeyFrame is " << keyframes.size() << endl;
 
             break;
         default:
             break;
         }
 
-
+        waitKey(27);
     }
 
     // 优化
