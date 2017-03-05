@@ -147,6 +147,8 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
+
+include_directories("/home/m/ws/src/ros_projects/image_read/src")
 include_directories(include ${Boost_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
 )
@@ -158,6 +160,11 @@ include_directories(include ${Boost_INCLUDE_DIRS}
 
 ADD_LIBRARY( slam_base src/slam_base.cpp )
 TARGET_LINK_LIBRARIES( slam_base
+    ${OpenCV_LIBS} 
+    ${PCL_LIBRARIES} )
+
+ADD_LIBRARY( slam_try src/slam_try.cpp )
+TARGET_LINK_LIBRARIES( slam_try
     ${OpenCV_LIBS} 
     ${PCL_LIBRARIES} )
 
@@ -238,11 +245,11 @@ TARGET_LINK_LIBRARIES( slam_base
 add_executable(image_read src/image_read.cpp )
 target_link_libraries(image_read ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 add_executable(feature_detect src/feature_detect.cpp )
-target_link_libraries(feature_detect ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(feature_detect slam_try ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
 ADD_EXECUTABLE( slam src/slam.cpp )
 TARGET_LINK_LIBRARIES( slam
-    slam_base
+    slam_try
     ${OpenCV_LIBS}
     ${PCL_LIBRARIES}
     g2o_core g2o_types_slam3d g2o_solver_csparse g2o_stuff g2o_csparse_extension ${CSPARSE_LIBRARY})

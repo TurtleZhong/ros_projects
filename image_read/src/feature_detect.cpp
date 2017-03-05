@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     /*
      * Actually this is a sequence of image but this is just an example.
      */
-    Mat testImage = imread(rgb_path + "54.png" , 1);
+    Mat testImage = imread(rgb_path + "48.png" , 1);
     Mat testImage_gray;
     cvtColor(testImage, testImage_gray, CV_BGR2GRAY);
 

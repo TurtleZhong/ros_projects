@@ -16,11 +16,11 @@ camera.scale=1000.0;
 # 数据相关
 # 起始与终止索引
 start_index=200
-end_index=600
+end_index=400
 # 数据所在目录
-rgb_dir=/home/m/ws/src/ros_projects/dataset/rgb_my/
+rgb_dir=/home/m/ws/src/ros_projects/dataset/rgb/
 rgb_extension=.png
-depth_dir=/home/m/ws/src/ros_projects/dataset/depth_my/
+depth_dir=/home/m/ws/src/ros_projects/dataset/depth/
 depth_extension=.png
 # 点云分辨率
 voxel_grid=0.01
@@ -31,7 +31,7 @@ min_good_match=10
 # 最小内点
 min_inliers=5
 # 最大运动误差
-max_norm=0.4
+max_norm=0.3
 
 # part 7
 keyframe_threshold=0.1
