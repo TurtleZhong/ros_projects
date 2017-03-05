@@ -2,3 +2,5 @@ Proj/
 rgb/
 depth/
 dataset/
+g2o/
+pcd/
