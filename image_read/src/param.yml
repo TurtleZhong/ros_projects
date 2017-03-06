@@ -1,4 +1,4 @@
-%YAML:1.0
+﻿%YAML:1.0
 rgb_path: "/home/m/ws/src/ros_projects/dataset/rgb/"
 
 camera.cx: 325.5
@@ -7,5 +7,6 @@ camera.fx: 518.0
 camera.fy: 519.0
 camera.scale: 1000.0
 
-voxel_grid： 0.01
+voxel_grid: 0.01
+
 

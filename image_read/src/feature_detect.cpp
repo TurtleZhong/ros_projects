@@ -15,9 +15,24 @@ using namespace cv;
 int main(int argc, char *argv[])
 {
 
-    FileStorage fs("/home/m/ws/src/ros_projects/image_read/src/param.yaml", FileStorage::READ);
-    string rgb_path;
-    fs["rgb_path"] >> rgb_path;
+//    FileStorage fs("/home/m/ws/src/ros_projects/image_read/src/param.yml", FileStorage::READ);
+//    string rgb_path;
+//    fs["rgb_path"] >> rgb_path;
+
+    FileStorage fs("/home/m/ws/src/ros_projects/image_read/src/param_test.xml" ,FileStorage::WRITE);
+    string rgb_path = "/home/m/ws/src/ros_projects/dataset/rgb/";
+    int camera_cx = 5;
+    double num = 444.44;
+    fs << "rgb_path" << rgb_path;
+    fs << "camera_cx" << camera_cx;
+    fs << "num" << num;
+    fs.release();
+
+    FileStorage fsr("/home/m/ws/src/ros_projects/image_read/src/param_test.xml" ,FileStorage::READ);
+    double camera;
+    fsr["num"] >> camera;
+    cout << "camera = " << camera << endl;
+
 
     /*
      * step1: load the original image turn it into gray;
@@ -108,22 +123,6 @@ int main(int argc, char *argv[])
 
     cout << "We got " << goodMatches.size() << " good Matchs" << endl;
 
-    /*
-     * SolvepnpRansca is the next step
-     */
-
-    /*We need to creat the camera matrix*/
-    CAMERA_INTRINSIC_PARAMETERS camera;
-    cout << camera.cx << endl;
-
-    double camera_matrix_data[3][3] = {
-        {camera.fx, 0, camera.cx},
-        {0, camera.fy, camera.cy},
-        {0, 0, 1}
-    };
-
-    // 构建相机矩阵
-    cv::Mat cameraMatrix( 3, 3, CV_64F, camera_matrix_data );
 
 
     waitKey(0);

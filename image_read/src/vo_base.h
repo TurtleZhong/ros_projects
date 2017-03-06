@@ -17,6 +17,7 @@ using namespace std;
 #include <eigen3/Eigen/Geometry>
 
 // OpenCV
+#include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/calib3d/calib3d.hpp>
@@ -77,6 +78,13 @@ struct RESULT_OF_PNP
 
 
 /*Useful function*/
+
+// point2dTo3d 将单个点从图像坐标转换为空间坐标
+// input: 3维点Point3f (u,v,d)
+cv::Point3f point2dTo3d( cv::Point3f& point, CAMERA_INTRINSIC_PARAMETERS& camera );
+
+
+
 // computeKeyPointsAndDesp 同时提取关键点与特征描述子
 
 void computeKeyPointsAndDesp( FRAME& frame, string detector, string descriptor );
@@ -88,41 +96,44 @@ RESULT_OF_PNP estimateMotion( FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PAR
 // cvMat2Eigen
 Eigen::Isometry3d cvMat2Eigen( cv::Mat& rvec, cv::Mat& tvec );
 
-class PARAM_READER
-{
-public:
-    PARAM_READER(string filename = PARAM_FILE_PATH)
-    {
-        ifstream fin( filename.c_str() );
-        if (!fin)
-        {
-            cerr<<"parameter file does not exist."<<endl;
-            return;
-        }
-    }
-    double getDoubleData(string keyName, double& key)
-    {
-        FileStorage fs(PARAM_FILE_PATH, FileStorage::READ);
-        fs[keyName] >> key;
-        fs.release();
-        return key;
-    }
-    bool getIntData(string keyName, int& key)
-    {
-        FileStorage fs(PARAM_FILE_PATH, FileStorage::READ);
-        fs[keyName] >> key;
-        fs.release();
-        return true;
-    }
-    bool getStringData(string keyName, string& key)
-    {
-        FileStorage fs(PARAM_FILE_PATH, FileStorage::READ);
-        fs[keyName] >> key;
-        fs.release();
-        return true;
-    }
-};
+//class PARAM_READER
+//{
+//public:
+//    PARAM_READER(string filename = PARAM_FILE_PATH)
+//    {
+//        ifstream fin( filename.c_str() );
+//        if (!fin)
+//        {
+//            cerr<<"parameter file does not exist."<<endl;
+//            return;
+//        }
+//    }
+//    double getDoubleData(string keyName, double& key)
+//    {
+//        FileStorage fs(PARAM_FILE_PATH, FileStorage::READ);
+//        fs[keyName] >> key;
+//        fs.release();
+//        return key;
+//    }
+//    int getIntData(string keyName, int& key)
+//    {
+//        FileStorage fs(PARAM_FILE_PATH, FileStorage::READ);
+//        fs[keyName] >> key;
+//        fs.release();
+//        return key;
+//    }
+//    string getStringData(string keyName, string& key)
+//    {
+//        FileStorage fs(PARAM_FILE_PATH, FileStorage::READ);
+//        fs[keyName] >> key;
+//        fs.release();
+//        return key;
+//    }
+//};
 
+
+//Read a frame from the image path
+//FRAME readFrame( int index, PARAM_READER& pd );
 
 
 

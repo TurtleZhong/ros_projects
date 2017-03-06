@@ -158,15 +158,21 @@ include_directories(include ${Boost_INCLUDE_DIRS}
 #   src/${PROJECT_NAME}/image_read.cpp
 # )
 
-ADD_LIBRARY( slam_base src/slam_base.cpp )
-TARGET_LINK_LIBRARIES( slam_base
+# ADD_LIBRARY( slam_base src/slam_base.cpp )
+# TARGET_LINK_LIBRARIES( slam_base
+#     ${OpenCV_LIBS} 
+#     ${PCL_LIBRARIES} )
+
+# ADD_LIBRARY( slam_try src/slam_try.cpp )
+# TARGET_LINK_LIBRARIES( slam_try
+#     ${OpenCV_LIBS} 
+#     ${PCL_LIBRARIES} )
+
+ADD_LIBRARY( vo_base src/vo_base.cpp )
+TARGET_LINK_LIBRARIES( vo_base
     ${OpenCV_LIBS} 
     ${PCL_LIBRARIES} )
 
-ADD_LIBRARY( slam_try src/slam_try.cpp )
-TARGET_LINK_LIBRARIES( slam_try
-    ${OpenCV_LIBS} 
-    ${PCL_LIBRARIES} )
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -245,13 +251,19 @@ TARGET_LINK_LIBRARIES( slam_try
 add_executable(image_read src/image_read.cpp )
 target_link_libraries(image_read ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 add_executable(feature_detect src/feature_detect.cpp )
-target_link_libraries(feature_detect slam_try ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(feature_detect  ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
-ADD_EXECUTABLE( slam src/slam.cpp )
-TARGET_LINK_LIBRARIES( slam
-    slam_try
+# ADD_EXECUTABLE( slam src/slam.cpp )
+# TARGET_LINK_LIBRARIES( slam
+#     slam_try
+#     ${OpenCV_LIBS}
+#     ${PCL_LIBRARIES}
+#     g2o_core g2o_types_slam3d g2o_solver_csparse g2o_stuff g2o_csparse_extension ${CSPARSE_LIBRARY})
+
+ADD_EXECUTABLE( visual_odometry src/visual_odometry.cpp )
+TARGET_LINK_LIBRARIES( visual_odometry
+    vo_base
     ${OpenCV_LIBS}
     ${PCL_LIBRARIES}
     g2o_core g2o_types_slam3d g2o_solver_csparse g2o_stuff g2o_csparse_extension ${CSPARSE_LIBRARY})
-
 

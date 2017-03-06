@@ -168,6 +168,12 @@ TARGET_LINK_LIBRARIES( slam_try
     ${OpenCV_LIBS} 
     ${PCL_LIBRARIES} )
 
+ADD_LIBRARY( vo_base src/vo_base.cpp )
+TARGET_LINK_LIBRARIES( vo_base
+    ${OpenCV_LIBS} 
+    ${PCL_LIBRARIES} )
+
+
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
@@ -254,4 +260,10 @@ TARGET_LINK_LIBRARIES( slam
     ${PCL_LIBRARIES}
     g2o_core g2o_types_slam3d g2o_solver_csparse g2o_stuff g2o_csparse_extension ${CSPARSE_LIBRARY})
 
+ADD_EXECUTABLE( visual_odometry src/visual_odometry.cpp )
+TARGET_LINK_LIBRARIES( visual_odometry
+    vo_base
+    ${OpenCV_LIBS}
+    ${PCL_LIBRARIES}
+    g2o_core g2o_types_slam3d g2o_solver_csparse g2o_stuff g2o_csparse_extension ${CSPARSE_LIBRARY})
 
