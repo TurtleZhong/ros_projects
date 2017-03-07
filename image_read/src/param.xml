@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<rgb_path>/home/m/ws/src/ros_projects/dataset/rgb/</rgb_path>
+<!--
+<camera.cx>325.5</camera.cx>
+<camera.cy>253.5</camera.cy>
+<camera.fx>518.0</camera.fx>
+<camera.fy>519.0</camera.fy>
+<camera.scale>1000.0</camera.scale>-->
+<good_match_threshold>10</good_match_threshold>
+<start_index>200</start_index>
+<end_index>400</end_index>
+<rgb_dir>/home/m/ws/src/ros_projects/dataset/rgb/</rgb_dir>
+<!--<rgb_extension>.png</rgb_extension>-->
+<depth_dir>/home/m/ws/src/ros_projects/dataset/depth/</depth_dir>
+<!--<depth_extension>.png</depth_extension>-->
+<voxel_grid>0.01</voxel_grid>
+<visualize_pointcloud>yes</visualize_pointcloud>
+<min_good_match>10</min_good_match>
+<min_inliers>5</min_inliers>
+<max_norm>0.3</max_norm>
+<keyframe_threshold>0.1</keyframe_threshold>
+<max_norm_lp>2.0</max_norm_lp>
+<check_loop_closure>yes</check_loop_closure>
+<nearby_loops>5</nearby_loops>
+<random_loops>5</random_loops>
+</opencv_storage>

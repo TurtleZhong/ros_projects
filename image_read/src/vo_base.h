@@ -32,7 +32,7 @@ using namespace cv;
 #include <pcl/filters/voxel_grid.h>
 
 
-#define PARAM_FILE_PATH "/home/m/ws/src/ros_projects/image_read/src/param.yaml"
+#define PARAM_FILE_PATH "/home/m/ws/src/ros_projects/image_read/src/param.xml"
 
 
 // 类型定义
@@ -46,7 +46,7 @@ public:
     double cx, cy, fx, fy, scale;
     CAMERA_INTRINSIC_PARAMETERS()
     {
-        FileStorage fs("/home/m/ws/src/ros_projects/image_read/src/param.yaml", FileStorage::READ);
+        FileStorage fs("/home/m/ws/src/ros_projects/image_read/src/param.xml", FileStorage::READ);
         fs["camera.cx"] >> this->cx;
         fs["camera.cy"] >> this->cy;
         fs["camera.fx"] >> this->fx;
@@ -107,6 +107,7 @@ Eigen::Isometry3d cvMat2Eigen( cv::Mat& rvec, cv::Mat& tvec );
 //            cerr<<"parameter file does not exist."<<endl;
 //            return;
 //        }
+//        fin.close();
 //    }
 //    double getDoubleData(string keyName, double& key)
 //    {
@@ -132,7 +133,7 @@ Eigen::Isometry3d cvMat2Eigen( cv::Mat& rvec, cv::Mat& tvec );
 //};
 
 
-//Read a frame from the image path
+////Read a frame from the image path
 //FRAME readFrame( int index, PARAM_READER& pd );
 
 

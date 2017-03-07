@@ -15,10 +15,30 @@ using namespace cv;
 int main(int argc, char *argv[])
 {
 
-    FileStorage fs("/home/m/ws/src/ros_projects/image_read/src/param.yaml", FileStorage::READ);
+//    FileStorage fs("/home/m/ws/src/ros_projects/image_read/src/param.xml", FileStorage::READ);
+//    double voxel_grid;
+//    fs["voxel_grid"] >> voxel_grid;
+//    cout << "voxel_grid = " << voxel_grid << endl;
+
+
+    FileStorage fs("/home/m/ws/src/ros_projects/image_read/src/param.xml", FileStorage::READ);
+    if( !fs.isOpened() )
+    {
+        cerr << "filed to open!" << endl;
+        return 1;
+    }
+    string rgb_path;
+    fs["rgb_path"] >> rgb_path;
+    cout << "rgb_path = " << rgb_path << endl;
+    int random_loops;
+    fs["random_loops"] >> random_loops;
+    cout << "random_loops = " << random_loops << endl;
     double voxel_grid;
     fs["voxel_grid"] >> voxel_grid;
+    //voxel_grid = (double)fs["voxel_grid"];
     cout << "voxel_grid = " << voxel_grid << endl;
+
+    fs.release();
 
 
 //    PARAM_READER pd;
@@ -28,7 +48,7 @@ int main(int argc, char *argv[])
 //    int endIndex   = pd.getIntData("end_index", endIndex);
 
 
-    /*KeyFrames saved*/
+///*KeyFrames saved*/
 //    vector<FRAME> keyframes;
 //    int currIndex = startIndex;   /**/
 //    FRAME lastFrame = readFrame(currIndex, pd);
