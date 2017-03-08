@@ -2,6 +2,7 @@
 <opencv_storage>
 <detector>"ORB"</detector>
 <descriptor>"ORB"</descriptor>
+<match_type>"knn"</match_type>
 <good_match_threshold>10</good_match_threshold>
 
 <rgb_path>/home/m/ws/src/ros_projects/dataset/rgb/</rgb_path>
