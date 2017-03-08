@@ -100,37 +100,65 @@ void computeKeyPointsAndDesp( FRAME& frame, string detector, string descriptor )
  *  Input: frame1 and frame2
  *  output: rvec and tvec and inliers
  */
-RESULT_OF_PNP estimateMotion( FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARAMETERS& camera )
+RESULT_OF_PNP estimateMotion( FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARAMETERS& camera, string matchType)
 {
     static PARAM_READER pd;
-    //static ParameterReader pd;
+
+    /* PARAM use BF match type */
     vector< cv::DMatch > matches;
     cv::BFMatcher matcher;
-    matcher.match( frame1.desp, frame2.desp, matches );
-
     RESULT_OF_PNP result;
     vector< cv::DMatch > goodMatches;
     double minDis = 9999;
     double good_match_threshold = pd.getDoubleData("good_match_threshold");
-    for ( size_t i=0; i<matches.size(); i++ )
+
+    /*PARAM use KNN match type*/
+
+    /* FLANN */
+    flann::Index flannIndex(frame1.desp, flann::LshIndexParams(12, 20, 2), cvflann::FLANN_DIST_HAMMING);
+
+
+    if (matchType == "BF")
     {
-        if ( matches[i].distance < minDis )
-            minDis = matches[i].distance;
+        matcher.match( frame1.desp, frame2.desp, matches );
+        for ( size_t i=0; i<matches.size(); i++ )
+        {
+            if ( matches[i].distance < minDis )
+                minDis = matches[i].distance;
+        }
+
+        if ( minDis < 10 )
+            minDis = 10;
+
+        for ( size_t i=0; i<matches.size(); i++ )
+        {
+            if (matches[i].distance < good_match_threshold*minDis)
+                goodMatches.push_back( matches[i] );
+        }
     }
-
-    if ( minDis < 10 )
-        minDis = 10;
-
-    for ( size_t i=0; i<matches.size(); i++ )
+    else if((matchType == "KNN") || (matchType == "knn"))
     {
-        if (matches[i].distance < good_match_threshold*minDis)
-            goodMatches.push_back( matches[i] );
+        /*Match the feature*/
+        Mat matchIndex(frame2.desp.rows, 2, CV_32SC1);
+        Mat matchDistance(frame2.desp.rows, 2, CV_32SC1);
+        flannIndex.knnSearch(frame2.desp, matchIndex, matchDistance, 2, flann::SearchParams());
+
+        //vector<DMatch> goodMatches;
+        for (int i = 0; i < matchDistance.rows; i++)
+        {
+            if(matchDistance.at<float>(i,0) < 0.8 * matchDistance.at<float>(i, 1))
+            {
+                DMatch dmatchs(i, matchIndex.at<int>(i,0), matchDistance.at<float>(i,1));
+                goodMatches.push_back(dmatchs);
+            }
+        }
+        //cout << "We got " << goodMatches.size() << " good Matchs" << endl;
     }
 
     Mat resultImage;
     drawMatches(frame2.rgb, frame2.kp, frame1.rgb, frame1.kp, goodMatches, resultImage);
     imshow("result of Image", resultImage);
-    cout << "We got " << goodMatches.size() << " good Matchs" << endl;
+    //cout << "We got " << goodMatches.size() << " good Matchs" << endl;
 
 
     if (goodMatches.size() <= 5)
@@ -181,6 +209,7 @@ RESULT_OF_PNP estimateMotion( FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PAR
     result.rvec = rvec;
     result.tvec = tvec;
     result.inliers = inliers.rows;
+    cout << "inliers = " << result.inliers << endl;
 
     return result;
 }

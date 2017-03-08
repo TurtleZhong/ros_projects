@@ -91,7 +91,7 @@ void computeKeyPointsAndDesp( FRAME& frame, string detector, string descriptor )
 
 // estimateMotion 计算两个帧之间的运动
 // 输入：帧1和帧2, 相机内参
-RESULT_OF_PNP estimateMotion( FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARAMETERS& camera );
+RESULT_OF_PNP estimateMotion(FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARAMETERS& camera , string matchType = "BF");
 
 // cvMat2Eigen
 Eigen::Isometry3d cvMat2Eigen( cv::Mat& rvec, cv::Mat& tvec );

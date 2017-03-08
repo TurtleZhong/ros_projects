@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
         FRAME currFrame = readFrame(currIndex, pd);
         computeKeyPointsAndDesp(currFrame, detector, descriptor);
 
-        resultPnp = estimateMotion(lastFrame, currFrame, camera);
+        resultPnp = estimateMotion(lastFrame, currFrame, camera, "knn");
         cout << "We got " << resultPnp.inliers << " inliers this time " << endl;
         lastFrame = currFrame;
 
