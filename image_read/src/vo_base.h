@@ -47,11 +47,11 @@ public:
     CAMERA_INTRINSIC_PARAMETERS()
     {
         FileStorage fs("/home/m/ws/src/ros_projects/image_read/src/param.xml", FileStorage::READ);
-        fs["camera.cx"] >> this->cx;
-        fs["camera.cy"] >> this->cy;
-        fs["camera.fx"] >> this->fx;
-        fs["camera.fy"] >> this->fy;
-        fs["camera.scale"] >> this->scale;
+        fs["camera_cx"] >> this->cx;
+        fs["camera_cy"] >> this->cy;
+        fs["camera_fx"] >> this->fx;
+        fs["camera_fy"] >> this->fy;
+        fs["camera_scale"] >> this->scale;
         fs.release();
     }
     bool getCameraParam();
@@ -96,45 +96,49 @@ RESULT_OF_PNP estimateMotion( FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PAR
 // cvMat2Eigen
 Eigen::Isometry3d cvMat2Eigen( cv::Mat& rvec, cv::Mat& tvec );
 
-//class PARAM_READER
-//{
-//public:
-//    PARAM_READER(string filename = PARAM_FILE_PATH)
-//    {
-//        ifstream fin( filename.c_str() );
-//        if (!fin)
-//        {
-//            cerr<<"parameter file does not exist."<<endl;
-//            return;
-//        }
-//        fin.close();
-//    }
-//    double getDoubleData(string keyName, double& key)
-//    {
-//        FileStorage fs(PARAM_FILE_PATH, FileStorage::READ);
-//        fs[keyName] >> key;
-//        fs.release();
-//        return key;
-//    }
-//    int getIntData(string keyName, int& key)
-//    {
-//        FileStorage fs(PARAM_FILE_PATH, FileStorage::READ);
-//        fs[keyName] >> key;
-//        fs.release();
-//        return key;
-//    }
-//    string getStringData(string keyName, string& key)
-//    {
-//        FileStorage fs(PARAM_FILE_PATH, FileStorage::READ);
-//        fs[keyName] >> key;
-//        fs.release();
-//        return key;
-//    }
-//};
+class PARAM_READER
+{
+public:
+    PARAM_READER(string filename = PARAM_FILE_PATH)
+    {
+        ifstream fin( filename.c_str() );
+        if (!fin)
+        {
+            cerr<<"parameter file does not exist."<<endl;
+            return;
+        }
+        fin.close();
+    }
+    double getDoubleData(string keyName)
+    {
+        double key;
+        FileStorage fs(PARAM_FILE_PATH, FileStorage::READ);
+        fs[keyName] >> key;
+        fs.release();
+        return key;
+    }
+    int getIntData(string keyName)
+    {
+
+        int key;
+        FileStorage fs(PARAM_FILE_PATH, FileStorage::READ);
+        key = (int)fs[keyName];
+        fs.release();
+        return key;
+    }
+    string getStringData(string keyName)
+    {
+        string key;
+        FileStorage fs(PARAM_FILE_PATH, FileStorage::READ);
+        fs[keyName] >> key;
+        fs.release();
+        return key;
+    }
+};
 
 
-////Read a frame from the image path
-//FRAME readFrame( int index, PARAM_READER& pd );
+//Read a frame from the image path
+FRAME readFrame( int index, PARAM_READER& pd );
 
 
 

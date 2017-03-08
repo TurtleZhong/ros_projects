@@ -16,6 +16,7 @@ PointCloud::Ptr image2PointCloud( cv::Mat& rgb, cv::Mat& depth, CAMERA_INTRINSIC
             PointT p;
 
             // 计算这个点的空间坐标
+
             p.z = double(d) / camera.scale;
             p.x = (n - camera.cx) * p.z / camera.fx;
             p.y = (m - camera.cy) * p.z / camera.fy;
@@ -46,30 +47,30 @@ cv::Point3f point2dTo3d( cv::Point3f& point, CAMERA_INTRINSIC_PARAMETERS& camera
     return p;
 }
 
-//FRAME readFrame( int index, PARAM_READER& pd )
-//{
-//    FRAME f;
-//    string rgbDir   =   pd.getStringData("rgb_dir",rgbDir);
-//    string depthDir =   pd.getStringData("depth_dir",depthDir);
+FRAME readFrame( int index, PARAM_READER& pd )
+{
+    FRAME f;
+    string rgbDir   =   pd.getStringData("rgb_dir");
+    string depthDir =   pd.getStringData("depth_dir");
 
-//    string rgbExt   =   pd.getStringData("rgb_extension", rgbExt);
-//    string depthExt =   pd.getStringData("depth_extension", depthExt);
+    string rgbExt   =   ".png";
+    string depthExt =   ".png";
 
-//    stringstream ss;
-//    ss<<rgbDir<<index<<rgbExt;
-//    string filename;
-//    ss>>filename;
-//    f.rgb = cv::imread( filename );
+    stringstream ss;
+    ss<<rgbDir<<index<<rgbExt;
+    string filename;
+    ss>>filename;
+    f.rgb = cv::imread( filename );
 
-//    ss.clear();
-//    filename.clear();
-//    ss<<depthDir<<index<<depthExt;
-//    ss>>filename;
+    ss.clear();
+    filename.clear();
+    ss<<depthDir<<index<<depthExt;
+    ss>>filename;
 
-//    f.depth = cv::imread( filename, -1 );
-//    f.frameID = index;
-//    return f;
-//}
+    f.depth = cv::imread( filename, -1 );
+    f.frameID = index;
+    return f;
+}
 
 
 // computeKeyPointsAndDesp --->extrat the keyPoints and desp
@@ -101,7 +102,7 @@ void computeKeyPointsAndDesp( FRAME& frame, string detector, string descriptor )
  */
 RESULT_OF_PNP estimateMotion( FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PARAMETERS& camera )
 {
-    //static PARAM_READER pd;
+    static PARAM_READER pd;
     //static ParameterReader pd;
     vector< cv::DMatch > matches;
     cv::BFMatcher matcher;
@@ -110,8 +111,7 @@ RESULT_OF_PNP estimateMotion( FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PAR
     RESULT_OF_PNP result;
     vector< cv::DMatch > goodMatches;
     double minDis = 9999;
-    double good_match_threshold;
-    //pd.getDoubleData("good_match_threshold",good_match_threshold);
+    double good_match_threshold = pd.getDoubleData("good_match_threshold");
     for ( size_t i=0; i<matches.size(); i++ )
     {
         if ( matches[i].distance < minDis )

@@ -15,68 +15,39 @@ using namespace cv;
 int main(int argc, char *argv[])
 {
 
-//    FileStorage fs("/home/m/ws/src/ros_projects/image_read/src/param.xml", FileStorage::READ);
-//    double voxel_grid;
-//    fs["voxel_grid"] >> voxel_grid;
-//    cout << "voxel_grid = " << voxel_grid << endl;
 
+    PARAM_READER pd;
+    int startIndex = pd.getIntData("start_index");
+    int endIndex   = pd.getIntData("end_index");
 
-    FileStorage fs("/home/m/ws/src/ros_projects/image_read/src/param.xml", FileStorage::READ);
-    if( !fs.isOpened() )
-    {
-        cerr << "filed to open!" << endl;
-        return 1;
-    }
-    string rgb_path;
-    fs["rgb_path"] >> rgb_path;
-    cout << "rgb_path = " << rgb_path << endl;
-    int random_loops;
-    fs["random_loops"] >> random_loops;
-    cout << "random_loops = " << random_loops << endl;
-    double voxel_grid;
-    fs["voxel_grid"] >> voxel_grid;
-    //voxel_grid = (double)fs["voxel_grid"];
-    cout << "voxel_grid = " << voxel_grid << endl;
+/*KeyFrames saved*/
+    vector<FRAME> keyframes;
+    int currIndex = startIndex;   /**/
+    FRAME lastFrame = readFrame(currIndex, pd);
 
-    fs.release();
-
-
-//    PARAM_READER pd;
-//    double voxel_grid = pd.getDoubleData("voxel_grid", voxel_grid);
-//    cout << "voxel_grid = " << voxel_grid << endl;
-//    int startIndex = pd.getIntData("start_index", startIndex);
-//    int endIndex   = pd.getIntData("end_index", endIndex);
-
-
-///*KeyFrames saved*/
-//    vector<FRAME> keyframes;
-//    int currIndex = startIndex;   /**/
-//    FRAME lastFrame = readFrame(currIndex, pd);
-
-//    string detector   = pd.getStringData("detector", detector);
-//    string descriptor = pd.getStringData("descriptor", descriptor);
+    string detector   = pd.getStringData("detector");
+    string descriptor = pd.getStringData("descriptor");
 //    cout << "detector = " << detector << endl;
+//    cout << "descriptor = " << descriptor << endl;
 
-//    CAMERA_INTRINSIC_PARAMETERS camera;
-//    computeKeyPointsAndDesp(lastFrame, detector, descriptor);
+    CAMERA_INTRINSIC_PARAMETERS camera;
+    computeKeyPointsAndDesp(lastFrame, detector, descriptor);
 
-    //keyframes.push_back(currFrame);
+    keyframes.push_back(lastFrame);
 
-//    for (currIndex = startIndex +1; currIndex < endIndex; currIndex++)
-//    {
-//        RESULT_OF_PNP resultPnp;
-//        cout << "Reading files " << currIndex << endl;
-//        FRAME currFrame = readFrame(currIndex, pd);
-//        computeKeyPointsAndDesp(currFrame, detector, descriptor);
+    for (currIndex = startIndex +1; currIndex < endIndex; currIndex++)
+    {
+        RESULT_OF_PNP resultPnp;
+        cout << "Reading files " << currIndex << endl;
+        FRAME currFrame = readFrame(currIndex, pd);
+        computeKeyPointsAndDesp(currFrame, detector, descriptor);
 
-//        resultPnp = estimateMotion(lastFrame, currFrame, camera);
-//        cout << "We got " << resultPnp.inliers << " inliers this time " << endl;
-//        lastFrame = currFrame;
+        resultPnp = estimateMotion(lastFrame, currFrame, camera);
+        cout << "We got " << resultPnp.inliers << " inliers this time " << endl;
+        lastFrame = currFrame;
 
-//        waitKey(27);
-//    }
-
-
+        waitKey(27);
+    }
 
     waitKey(0);
 

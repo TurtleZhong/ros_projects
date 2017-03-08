@@ -8,14 +8,11 @@ start_index: 200
 end_index: 400
 
 rgb_dir: "/home/m/ws/src/ros_projects/dataset/rgb/"
-rgb_extension: ".png"
 depth_dir: "/home/m/ws/src/ros_projects/dataset/depth/"
-depth_extension: ".png"
 
 
 voxel_grid: 0.01
 
-visualize_pointcloud: "yes"
 
 min_good_match: 10
 
@@ -27,6 +24,5 @@ keyframe_threshold: 0.1
 max_norm_lp: 2.0
 
 
-check_loop_closure: "yes"
 nearby_loops: 5
 random_loops: 5
