@@ -115,7 +115,7 @@ RESULT_OF_PNP estimateMotion( FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PAR
     /*PARAM use KNN match type*/
 
     /* FLANN */
-    flann::Index flannIndex(frame1.desp, flann::LshIndexParams(12, 20, 2), cvflann::FLANN_DIST_HAMMING);
+    flann::Index flannIndex(frame2.desp, flann::LshIndexParams(12, 20, 2), cvflann::FLANN_DIST_HAMMING);
     vector<vector<DMatch>> matchesKnn;
     cv::BFMatcher knnMatcher;
 
@@ -144,9 +144,9 @@ RESULT_OF_PNP estimateMotion( FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PAR
     {
         cout << "using knn to match the feature" << endl;
         /*Match the feature*/
-                Mat matchIndex(frame2.desp.rows, 2, CV_32SC1);
-                Mat matchDistance(frame2.desp.rows, 2, CV_32SC1);
-                flannIndex.knnSearch(frame2.desp, matchIndex, matchDistance, 2, flann::SearchParams());
+                Mat matchIndex(frame1.desp.rows, 2, CV_32SC1);
+                Mat matchDistance(frame1.desp.rows, 2, CV_32SC1);
+                flannIndex.knnSearch(frame1.desp, matchIndex, matchDistance, 2, flann::SearchParams());
 
                 //vector<DMatch> goodMatches;
                 for (int i = 0; i < matchDistance.rows; i++)
@@ -172,7 +172,7 @@ RESULT_OF_PNP estimateMotion( FRAME& frame1, FRAME& frame2, CAMERA_INTRINSIC_PAR
     }
 
     Mat resultImage;
-    drawMatches(frame2.rgb, frame2.kp, frame1.rgb, frame1.kp, goodMatches, resultImage);
+    drawMatches(frame1.rgb, frame1.kp, frame2.rgb, frame2.kp, goodMatches, resultImage);
     imshow("result of Image", resultImage);
     cout << "We got " << goodMatches.size() << " good Matchs" << endl;
 
