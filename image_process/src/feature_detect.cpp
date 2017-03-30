@@ -1,13 +1,8 @@
 ﻿#include <iostream>
 #include <opencv2/opencv.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/nonfree/features2d.hpp>
-#include <opencv2/features2d/features2d.hpp>
-
-#include "slam_try.h"
-
 
 using namespace std;
+
 using namespace cv;
 
 
@@ -46,6 +41,9 @@ int main(int argc, char *argv[])
     /*
      * define the detect param: use ORB
      */
+
+    //Ptr<ORB> detect = ORB::create();
+
     OrbFeatureDetector featureDetector;
     vector<KeyPoint> keyPoints;
     Mat descriptors;
@@ -53,6 +51,7 @@ int main(int argc, char *argv[])
     /*
      * use detect() function to detect keypoints
      */
+    //detect->detect(grayImage, keyPoints);
     featureDetector.detect(grayImage, keyPoints);
 
     /*
@@ -60,6 +59,7 @@ int main(int argc, char *argv[])
      */
     OrbDescriptorExtractor featureEvaluator;
     featureEvaluator.compute(grayImage, keyPoints, descriptors);
+    //detect->compute(grayImage, keyPoints, descriptors);
 
     Mat pointsImage;
     drawKeypoints(srcImage, keyPoints, pointsImage);
@@ -82,6 +82,8 @@ int main(int argc, char *argv[])
     Mat testDescriptors;
     featureDetector.detect(testImage_gray, testKeyPoints);
     featureEvaluator.compute(testImage_gray, testKeyPoints,testDescriptors);
+    //detect->detect(testImage_gray, testKeyPoints);
+    //detect->compute(testImage_gray, testKeyPoints,testDescriptors);
 
     /*Match the feature*/
     Mat matchIndex(testDescriptors.rows, 2, CV_32SC1);

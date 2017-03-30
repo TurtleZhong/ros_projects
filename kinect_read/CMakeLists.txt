@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(image_read)
-SET(CMAKE_CXX_COMPILER "g++")
-SET( CMAKE_BUILD_TYPE Release )
-SET( CMAKE_CXX_FLAGS "-O3 -std=c++11" )
+project(kinect_read)
+
 ## Add support for C++11, supported in ROS Kinetic and newer
 # add_definitions(-std=c++11)
 
@@ -16,37 +14,11 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
-  message_filters
-  
 )
 
 ## System dependencies are found with CMake's conventions
-find_package(Boost REQUIRED COMPONENTS system)
-find_package(OpenCV REQUIRED)
+# find_package(Boost REQUIRED COMPONENTS system)
 
-# 增加PCL库的依赖
-FIND_PACKAGE( PCL REQUIRED )
-#list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4") # use this in Ubuntu 16.04
-
-
-# 添加头文件和库文件
-#ADD_DEFINITIONS( ${PCL_DEFINITIONS} )
-#INCLUDE_DIRECTORIES( ${PCL_INCLUDE_DIRS}  )
-#LINK_LIBRARIES( ${PCL_LIBRARY_DIRS} )
-include_directories ( ${OpenCV_INCLUDE_DIRS})
-include_directories ( ${PCL_INCLUDE_DIRS} )
-include_directories ("/usr/local/include/eigen3")
-add_definitions(${PCL_DEFINITIONS})
-
-
-# 添加g2o的依赖
-# 因为g2o不是常用库，要添加它的findg2o.cmake文件
-LIST( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules )
-#SET( G2O_ROOT /usr/local )
-FIND_PACKAGE( G2O REQUIRED )
-# CSparse
-FIND_PACKAGE( CSparse REQUIRED )
-INCLUDE_DIRECTORIES( ${G2O_INCLUDE_DIR} ${CSPARSE_INCLUDE_DIR} )
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -135,7 +107,7 @@ INCLUDE_DIRECTORIES( ${G2O_INCLUDE_DIR} ${CSPARSE_INCLUDE_DIR} )
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES image_read
+#  LIBRARIES kinect_read
 #  CATKIN_DEPENDS cv_bridge image_transport roscpp rospy sensor_msgs std_msgs
 #  DEPENDS system_lib
 )
@@ -147,32 +119,14 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
-
-include_directories("/home/m/ws/src/ros_projects/image_read/src")
-include_directories(include ${Boost_INCLUDE_DIRS}
+include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/image_read.cpp
+#   src/${PROJECT_NAME}/kinect_read.cpp
 # )
-
-ADD_LIBRARY( slam_base src/slam_base.cpp )
-TARGET_LINK_LIBRARIES( slam_base
-    ${OpenCV_LIBS} 
-    ${PCL_LIBRARIES} )
-
-ADD_LIBRARY( slam_try src/slam_try.cpp )
-TARGET_LINK_LIBRARIES( slam_try
-    ${OpenCV_LIBS} 
-    ${PCL_LIBRARIES} )
-
-ADD_LIBRARY( vo_base src/vo_base.cpp )
-TARGET_LINK_LIBRARIES( vo_base
-    ${OpenCV_LIBS} 
-    ${PCL_LIBRARIES} )
-
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -182,7 +136,7 @@ TARGET_LINK_LIBRARIES( vo_base
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/image_read_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/kinect_read_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -198,8 +152,6 @@ TARGET_LINK_LIBRARIES( vo_base
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-
-
 
 #############
 ## Install ##
@@ -241,29 +193,13 @@ TARGET_LINK_LIBRARIES( vo_base
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_image_read.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_kinect_read.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-add_executable(image_read src/image_read.cpp )
-target_link_libraries(image_read ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
-add_executable(feature_detect src/feature_detect.cpp )
-target_link_libraries(feature_detect slam_try ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
-ADD_EXECUTABLE( slam src/slam.cpp )
-TARGET_LINK_LIBRARIES( slam
-    slam_try
-    ${OpenCV_LIBS}
-    ${PCL_LIBRARIES}
-    g2o_core g2o_types_slam3d g2o_solver_csparse g2o_stuff g2o_csparse_extension ${CSPARSE_LIBRARY})
-
-ADD_EXECUTABLE( visual_odometry src/visual_odometry.cpp )
-TARGET_LINK_LIBRARIES( visual_odometry
-    vo_base
-    ${OpenCV_LIBS}
-    ${PCL_LIBRARIES}
-    g2o_core g2o_types_slam3d g2o_solver_csparse g2o_stuff g2o_csparse_extension ${CSPARSE_LIBRARY})
-
+add_executable(kinect_read src/kinect_read.cpp )
+target_link_libraries(kinect_read ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})

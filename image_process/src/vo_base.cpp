@@ -76,6 +76,7 @@ FRAME readFrame( int index, PARAM_READER& pd )
 // computeKeyPointsAndDesp --->extrat the keyPoints and desp
 void computeKeyPointsAndDesp( FRAME& frame, string detector, string descriptor )
 {
+
     cv::Ptr<cv::FeatureDetector> _detector;
     cv::Ptr<cv::DescriptorExtractor> _descriptor;
 
@@ -90,6 +91,9 @@ void computeKeyPointsAndDesp( FRAME& frame, string detector, string descriptor )
 
     _detector->detect( frame.rgb, frame.kp );
     _descriptor->compute( frame.rgb, frame.kp, frame.desp );
+//    Ptr<ORB> detect = ORB::create();
+//    detect->detect(frame.rgb, frame.kp);
+//    detect->compute(frame.rgb, frame.kp, frame.desp);
 
     return;
 }

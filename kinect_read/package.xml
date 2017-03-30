@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>image_read</name>
+  <name>kinect_read</name>
   <version>0.0.0</version>
-  <description>The image_read package</description>
+  <description>The kinect_read package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/image_read</url> -->
+  <!-- <url type="website">http://wiki.ros.org/kinect_read</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
@@ -46,14 +46,12 @@
   <build_depend>rospy</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>std_msgs</build_depend>
-  <build_depend>message_filters</build_depend>
   <run_depend>cv_bridge</run_depend>
   <run_depend>image_transport</run_depend>
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>sensor_msgs</run_depend>
   <run_depend>std_msgs</run_depend>
-  <run_depend>message_filters</run_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

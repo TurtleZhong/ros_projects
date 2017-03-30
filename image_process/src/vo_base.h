@@ -18,10 +18,6 @@ using namespace std;
 
 // OpenCV
 #include <opencv2/opencv.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/calib3d/calib3d.hpp>
-#include <opencv2/core/eigen.hpp>
 using namespace cv;
 
 // PCL
@@ -32,7 +28,7 @@ using namespace cv;
 #include <pcl/filters/voxel_grid.h>
 
 
-#define PARAM_FILE_PATH "/home/m/ws/src/ros_projects/image_read/src/param.xml"
+#define PARAM_FILE_PATH "/home/m/ws/src/ros_projects/image_process/src/param.xml"
 
 
 // 类型定义
@@ -46,7 +42,7 @@ public:
     double cx, cy, fx, fy, scale;
     CAMERA_INTRINSIC_PARAMETERS()
     {
-        FileStorage fs("/home/m/ws/src/ros_projects/image_read/src/param.xml", FileStorage::READ);
+        FileStorage fs("/home/m/ws/src/ros_projects/image_process/src/param.xml", FileStorage::READ);
         fs["camera_cx"] >> this->cx;
         fs["camera_cy"] >> this->cy;
         fs["camera_fx"] >> this->fx;
@@ -139,12 +135,6 @@ public:
 
 //Read a frame from the image path
 FRAME readFrame( int index, PARAM_READER& pd );
-
-
-
-
-
-
 
 
 
