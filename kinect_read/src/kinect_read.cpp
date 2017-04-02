@@ -48,7 +48,8 @@ int main(int argc, char *argv[])
     sleep(1);
     //subscribe the image from the Kinect
     imgSub   = nh.subscribe("/camera/rgb/image_color", 5, imageCallback);
-    depthSub = nh.subscribe("/camera/depth_registered/image_raw",5,depthCallback);
+    //depthSub = nh.subscribe("/camera/depth_registered/image_raw",5,depthCallback);
+    depthSub = nh.subscribe("/camera/depth_registered/sw_registered/image_rect_raw",5,depthCallback);
 
     ros::spin();
     return 0;
@@ -74,10 +75,10 @@ void imageCallback(const cv_bridge::CvImage::ConstPtr &imgMsg)
     if(save_image)
     {
         imwrite(rgbFileName, inImage, compressionQuality);
-        //cout << "write " << "  rgb_" << ss.str() << " suscessfully!" << endl;
+        cout << "write " << "  rgb_" << ss.str() << " suscessfully!" << endl;
         rgbNum += 1;
     }
-    waitKey(30);
+    //waitKey(30);
 }
 /**
  * @brief depthCallback
@@ -95,12 +96,12 @@ void depthCallback(const cv_bridge::CvImage::ConstPtr &depthMsg)
     if(save_image)
     {
         imwrite(depthFileName, depthImage, compressionQuality);
-        //cout << "write " << "depth_" << ss.str() << " suscessfully!" << endl;
+        cout << "write " << "depth_" << ss.str() << " suscessfully!" << endl;
         depthNum += 1;
     }
     //cout << "the value of save_image is :" << save_image << endl;
     //imshow("depth_from_kinect",depthImage);
-    waitKey(30);
+    //waitKey(30);
 }
 
 
