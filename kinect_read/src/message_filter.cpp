@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <string>
 #include <sstream>
 
@@ -6,6 +6,13 @@
 #include <ros/package.h>
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
+
+//message_filters
+#include <message_filters/subscriber.h>
+#include <message_filters/synchronizer.h>
+#include <message_filters/sync_policies/approximate_time.h>
+
+
 #include <sensor_msgs/image_encodings.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
@@ -14,6 +21,7 @@
 
 using namespace std;
 using namespace cv;
+using namespace message_filters;
 
 void imageCallback(const cv_bridge::CvImage::ConstPtr &imgMsg);
 void depthCallback(const cv_bridge::CvImage::ConstPtr &depthMsg);
@@ -28,6 +36,41 @@ string param;
 bool save_image = false;
 
 
+void callback(const cv_bridge::CvImage::ConstPtr &imgMsg,const cv_bridge::CvImage::ConstPtr &depthMsg)
+{
+    cout << "suscessfully" << endl;
+    Mat inImage;
+    inImage = imgMsg->image;
+
+    vector<int> rgbCompressionQuality;
+    rgbCompressionQuality.push_back(CV_IMWRITE_PNG_COMPRESSION);
+    //imshow("image_from_kinect", inImage);
+    stringstream rgb_ss;
+    rgb_ss << rgbNum;
+    rgbFileName = "/home/m/ws/src/ros_projects/kinect_read/save_data/rgb/" + rgb_ss.str() + ".png";
+    if(save_image)
+    {
+        imwrite(rgbFileName, inImage, rgbCompressionQuality);
+        cout << "write " << "  rgb_" << rgb_ss.str() << " suscessfully!" << endl;
+        rgbNum += 1;
+    }
+
+    Mat depthImage(depthMsg->image.cols,depthMsg->image.rows, CV_16UC1);
+    depthImage = depthMsg->image;
+    vector<int> depthCompressionQuality;
+    depthCompressionQuality.push_back(CV_IMWRITE_PNG_COMPRESSION);
+    stringstream depth_ss;
+    depth_ss << depthNum;
+    depthFileName = "/home/m/ws/src/ros_projects/kinect_read/save_data/depth/" + depth_ss.str() + ".png";
+    if(save_image)
+    {
+        imwrite(depthFileName, depthImage, depthCompressionQuality);
+        cout << "write " << "depth_" << depth_ss.str() << " suscessfully!" << endl;
+        depthNum += 1;
+    }
+
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -35,7 +78,10 @@ int main(int argc, char *argv[])
     ros::init(argc, argv, "kinect_read");
     ros::NodeHandle nh;
 
-    ros::Subscriber imgSub, depthSub;
+    //ros::Subscriber imgSub, depthSub;
+
+    message_filters::Subscriber<cv_bridge::CvImage> imgSub(nh, "/camera/rgb/image_color", 10);
+    message_filters::Subscriber<cv_bridge::CvImage> depthSub(nh, "/camera/depth_registered/sw_registered/image_rect_raw", 10);
     if (argc > 1)
     {
         param = argv[1];
@@ -47,11 +93,14 @@ int main(int argc, char *argv[])
     }
     //sleep(1);
 
+    typedef message_filters::sync_policies::ApproximateTime<cv_bridge::CvImage, cv_bridge::CvImage> MySyncPolicy;
+    Synchronizer<MySyncPolicy> sync(MySyncPolicy(10), imgSub, depthSub);
+    sync.registerCallback(boost::bind(&callback, _1, _2));
     
     //subscribe the image from the Kinect
-    imgSub   = nh.subscribe("/camera/rgb/image_color", 5, imageCallback);
+    //imgSub   = nh.subscribe("/camera/rgb/image_color", 5, imageCallback);
     //depthSub = nh.subscribe("/camera/depth_registered/image_raw",5,depthCallback);
-    depthSub = nh.subscribe("/camera/depth_registered/sw_registered/image_rect_raw",5,depthCallback);
+    //depthSub = nh.subscribe("/camera/depth_registered/sw_registered/image_rect_raw",5,depthCallback);
 
     ros::spin();
     return 0;
@@ -80,7 +129,7 @@ void imageCallback(const cv_bridge::CvImage::ConstPtr &imgMsg)
         cout << "write " << "  rgb_" << ss.str() << " suscessfully!" << endl;
         rgbNum += 1;
     }
-    waitKey(30);
+    //waitKey(30);
 }
 /**
  * @brief depthCallback
@@ -103,7 +152,7 @@ void depthCallback(const cv_bridge::CvImage::ConstPtr &depthMsg)
     }
     //cout << "the value of save_image is :" << save_image << endl;
     //imshow("depth_from_kinect",depthImage);
-    waitKey(30);
+    //waitKey(30);
 }
 
 

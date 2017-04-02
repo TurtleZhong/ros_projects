@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
+  message_filters
 )
 
 ## System dependencies are found with CMake's conventions
@@ -203,3 +204,7 @@ include_directories(
 
 add_executable(kinect_read src/kinect_read.cpp )
 target_link_libraries(kinect_read ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+
+add_executable(message_filter src/message_filter.cpp )
+target_link_libraries(message_filter ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+

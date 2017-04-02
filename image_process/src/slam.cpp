@@ -239,7 +239,7 @@ CHECK_RESULT checkKeyframes( FRAME& f1, FRAME& f2, g2o::SparseOptimizer& opti, b
     static double max_norm_lp = pd.getDoubleData("max_norm_l");
     static CAMERA_INTRINSIC_PARAMETERS camera;
     // 比较f1 和 f2
-    RESULT_OF_PNP result = estimateMotion( f1, f2, camera );
+    RESULT_OF_PNP result = estimateMotion( f1, f2, camera, "knn" );
     if ( result.inliers < min_inliers ) //inliers不够，放弃该帧
         return NOT_MATCHED;
     // 计算运动范围是否太大

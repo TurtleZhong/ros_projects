@@ -14,7 +14,7 @@
 <camera_scale>1000.0</camera_scale>
 
 <start_index>10</start_index>
-<end_index>700</end_index>
+<end_index>500</end_index>
 <rgb_dir>/home/m/ws/src/ros_projects/dataset/rgb/</rgb_dir>
 <!--<rgb_extension>.png</rgb_extension>-->
 <depth_dir>/home/m/ws/src/ros_projects/dataset/depth/</depth_dir>
