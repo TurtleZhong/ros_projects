@@ -90,7 +90,7 @@ PointCloud::Ptr joinPointCloud( PointCloud::Ptr original, FRAME& newFrame, Eigen
 class ParameterReader
 {
 public:
-    ParameterReader( string filename="/home/m/ws/src/ros_projects/image_read/parameters.txt" )
+    ParameterReader( string filename="/home/m/ws/src/ros_projects/image_process/parameters.txt" )
     {
         ifstream fin( filename.c_str() );
         if (!fin)

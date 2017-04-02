@@ -8,7 +8,7 @@
 #include <sstream>
 using namespace std;
 
-#include "slam_base.h"
+#include "vo_base.h"
 
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/passthrough.h>
@@ -29,7 +29,7 @@ typedef g2o::BlockSolver_6_3 SlamBlockSolver;
 typedef g2o::LinearSolverEigen< SlamBlockSolver::PoseMatrixType > SlamLinearSolver;
 
 // 给定index，读取一帧数据
-FRAME readFrame( int index, ParameterReader& pd );
+FRAME readFrame(int index, PARAM_READER &pd );
 // 估计一个运动的大小
 double normofTransform( cv::Mat rvec, cv::Mat tvec );
 
@@ -45,9 +45,10 @@ void checkRandomLoops( vector<FRAME>& frames, FRAME& currFrame, g2o::SparseOptim
 int main( int argc, char** argv )
 {
     // 前面部分和vo是一样的
-    ParameterReader pd;
-    int startIndex  =   atoi( pd.getData( "start_index" ).c_str() );
-    int endIndex    =   atoi( pd.getData( "end_index"   ).c_str() );
+    PARAM_READER pd;
+    //ParameterReader pd;
+    int startIndex  =   pd.getDoubleData("start_index");
+    int endIndex    =   pd.getIntData("end_index");
 
     // 所有的关键帧都放在了这里
     vector< FRAME > keyframes;
@@ -56,13 +57,18 @@ int main( int argc, char** argv )
     int currIndex = startIndex; // 当前索引为currIndex
     FRAME currFrame = readFrame( currIndex, pd ); // 上一帧数据
 
-    string detector = pd.getData( "detector" );
-    string descriptor = pd.getData( "descriptor" );
-    CAMERA_INTRINSIC_PARAMETERS camera = getDefaultCamera();
+    string detector = pd.getStringData("detector");
+    string descriptor = pd.getStringData("descriptor");
+    CAMERA_INTRINSIC_PARAMETERS camera;
     computeKeyPointsAndDesp( currFrame, detector, descriptor );
     PointCloud::Ptr cloud = image2PointCloud( currFrame.rgb, currFrame.depth, camera );
 
     // 是否显示点云
+    bool visualize = false;
+    if(pd.getStringData("visualize_pointcloud") == "yes")
+    {
+        visualize = true;
+    }
 //    bool visualize = pd.getData("visualize_pointcloud")==string("yes");
 
 
@@ -75,7 +81,7 @@ int main( int argc, char** argv )
     SlamBlockSolver* blockSolver = new SlamBlockSolver( linearSolver );
     g2o::OptimizationAlgorithmLevenberg* solver = new g2o::OptimizationAlgorithmLevenberg( blockSolver );
 
-    g2o::SparseOptimizer globalOptimizer;  // 最后用的就是这个东东
+    g2o::SparseOptimizer globalOptimizer;  //
     globalOptimizer.setAlgorithm( solver );
     // 不要输出调试信息
     globalOptimizer.setVerbose( false );
@@ -89,11 +95,13 @@ int main( int argc, char** argv )
 
     keyframes.push_back( currFrame );
 
-    double keyframe_threshold = atof( pd.getData("keyframe_threshold").c_str() );
+    double keyframe_threshold = pd.getDoubleData("keyframe_threshold");
+
+    //double keyframe_threshold = atof( pd.getData("keyframe_threshold").c_str() );
 
     //显示点云
 //    pcl::visualization::CloudViewer viewer("viewer");
-    bool check_loop_closure = pd.getData("check_loop_closure")==string("yes");
+    bool check_loop_closure = pd.getStringData("check_loop_closure")==string("yes");
 
     for ( currIndex=startIndex+1; currIndex<endIndex; currIndex++ )
     {
@@ -123,13 +131,6 @@ int main( int argc, char** argv )
             // 不远不近，刚好
             //Eigen::Isometry3d T = cvMat2Eigen( result.rvec, result.tvec );
             //cout<<"T="<<T.matrix()<<endl;
-
-            /**
-             * This is important!!
-             * This is important!!
-             * This is important!!
-             * (very important so I've said three times!)
-             */
             // 检测回环
             if (check_loop_closure)
             {
@@ -149,10 +150,10 @@ int main( int argc, char** argv )
 
     // 优化
     cout<<RESET"optimizing pose graph, vertices: "<<globalOptimizer.vertices().size()<<endl;
-    globalOptimizer.save("/home/m/ws/src/ros_projects/image_read/g2o/result_before.g2o");
+    globalOptimizer.save("/home/m/ws/src/ros_projects/image_process/g2o/result_before.g2o");
     globalOptimizer.initializeOptimization();
     globalOptimizer.optimize( 100 ); //可以指定优化步数
-    globalOptimizer.save( "/home/m/ws/src/ros_projects/image_read/g2o/result_after.g2o" );
+    globalOptimizer.save( "/home/m/ws/src/ros_projects/image_process/g2o/result_after.g2o" );
     cout<<"Optimization done."<<endl;
 
     // 拼接点云地图
@@ -165,7 +166,7 @@ int main( int argc, char** argv )
     pass.setFilterFieldName("z");
     pass.setFilterLimits( 0.0, 4.0 ); //4m以上就不要了
 
-    double gridsize = atof( pd.getData( "voxel_grid" ).c_str() ); //分辨图可以在parameters.txt里调
+    double gridsize = pd.getDoubleData("voxel_grid"); //分辨图可以在parameters.txt里调
     voxel.setLeafSize( gridsize, gridsize, gridsize );
 
     for (size_t i=0; i<keyframes.size(); i++)
@@ -190,20 +191,23 @@ int main( int argc, char** argv )
     voxel.setInputCloud( output );
     voxel.filter( *tmp );
     //存储
-    pcl::io::savePCDFile( "/home/m/ws/src/ros_projects/image_read/pcd/result.pcd", *tmp );
+    pcl::io::savePCDFile( "/home/m/ws/src/ros_projects/image_process/pcd/result.pcd", *tmp );
 
     cout<<"Final map is saved."<<endl;
     return 0;
 }
 
-FRAME readFrame( int index, ParameterReader& pd )
+FRAME readFrame( int index, PARAM_READER& pd )
 {
     FRAME f;
-    string rgbDir   =   pd.getData("rgb_dir");
-    string depthDir =   pd.getData("depth_dir");
+    string rgbDir   =   pd.getStringData("rgb_dir");
+    string depthDir =   pd.getStringData("depth_dir");
 
-    string rgbExt   =   pd.getData("rgb_extension");
-    string depthExt =   pd.getData("depth_extension");
+//    string rgbExt   =   pd.getStringData("rgb_extension");
+//    string depthExt =   pd.getStringData("depth_extension");
+
+    string rgbExt   =   ".png";
+    string depthExt =   ".png";
 
     stringstream ss;
     ss<<rgbDir<<index<<rgbExt;
@@ -228,12 +232,12 @@ double normofTransform( cv::Mat rvec, cv::Mat tvec )
 
 CHECK_RESULT checkKeyframes( FRAME& f1, FRAME& f2, g2o::SparseOptimizer& opti, bool is_loops)
 {
-    static ParameterReader pd;
-    static int min_inliers = atoi( pd.getData("min_inliers").c_str() );
-    static double max_norm = atof( pd.getData("max_norm").c_str() );
-    static double keyframe_threshold = atof( pd.getData("keyframe_threshold").c_str() );
-    static double max_norm_lp = atof( pd.getData("max_norm_lp").c_str() );
-    static CAMERA_INTRINSIC_PARAMETERS camera = getDefaultCamera();
+    static PARAM_READER pd;
+    static int min_inliers = pd.getIntData("min_inliers");
+    static double max_norm = pd.getDoubleData("max_norm");
+    static double keyframe_threshold = pd.getDoubleData("keyframe_threshold");
+    static double max_norm_lp = pd.getDoubleData("max_norm_l");
+    static CAMERA_INTRINSIC_PARAMETERS camera;
     // 比较f1 和 f2
     RESULT_OF_PNP result = estimateMotion( f1, f2, camera );
     if ( result.inliers < min_inliers ) //inliers不够，放弃该帧
@@ -289,8 +293,8 @@ CHECK_RESULT checkKeyframes( FRAME& f1, FRAME& f2, g2o::SparseOptimizer& opti, b
 
 void checkNearbyLoops( vector<FRAME>& frames, FRAME& currFrame, g2o::SparseOptimizer& opti )
 {
-    static ParameterReader pd;
-    static int nearby_loops = atoi( pd.getData("nearby_loops").c_str() );
+    static PARAM_READER pd;
+    static int nearby_loops = pd.getIntData("nearby_loops");
 
     // 就是把currFrame和 frames里末尾几个测一遍
     if ( frames.size() <= nearby_loops )
@@ -313,8 +317,8 @@ void checkNearbyLoops( vector<FRAME>& frames, FRAME& currFrame, g2o::SparseOptim
 
 void checkRandomLoops( vector<FRAME>& frames, FRAME& currFrame, g2o::SparseOptimizer& opti )
 {
-    static ParameterReader pd;
-    static int random_loops = atoi( pd.getData("random_loops").c_str() );
+    static PARAM_READER pd;
+    static int random_loops = pd.getIntData("random_loops");
     srand( (unsigned int) time(NULL) );
     // 随机取一些帧进行检测
 
