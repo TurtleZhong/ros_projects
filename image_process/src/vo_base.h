@@ -79,6 +79,10 @@ struct RESULT_OF_PNP
 // input: 3维点Point3f (u,v,d)
 cv::Point3f point2dTo3d( cv::Point3f& point, CAMERA_INTRINSIC_PARAMETERS& camera );
 
+// 函数接口
+// image2PonitCloud 将rgb图转换为点云
+PointCloud::Ptr image2PointCloud( cv::Mat& rgb, cv::Mat& depth, CAMERA_INTRINSIC_PARAMETERS& camera );
+
 
 
 // computeKeyPointsAndDesp 同时提取关键点与特征描述子
