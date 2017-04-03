@@ -13,11 +13,11 @@
 <camera_fy>519.0</camera_fy>
 <camera_scale>1000.0</camera_scale>
 
-<start_index>10</start_index>
-<end_index>500</end_index>
-<rgb_dir>/home/m/ws/src/ros_projects/dataset/rgb/</rgb_dir>
+<start_index>1</start_index>
+<end_index>1126</end_index>
+<rgb_dir>/home/m/ws/src/ros_projects/kinect_read/save_data/rgb/</rgb_dir>
 <!--<rgb_extension>.png</rgb_extension>-->
-<depth_dir>/home/m/ws/src/ros_projects/dataset/depth/</depth_dir>
+<depth_dir>/home/m/ws/src/ros_projects/kinect_read/save_data/depth/</depth_dir>
 <!--<depth_extension>.png</depth_extension>-->
 <voxel_grid>0.01</voxel_grid>
 <visualize_pointcloud>yes</visualize_pointcloud>
