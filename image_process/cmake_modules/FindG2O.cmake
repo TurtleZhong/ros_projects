@@ -5,10 +5,10 @@ FIND_PATH(G2O_INCLUDE_DIR g2o/core/base_vertex.h
   $ENV{G2O_ROOT}/include
   $ENV{G2O_ROOT}
   /usr/local/include
-  # /usr/include
-  # /opt/local/include
-  # /sw/local/include
-  # /sw/include
+  /usr/include
+  /opt/local/include
+  /sw/local/include
+  /sw/include
   NO_DEFAULT_PATH
   )
 
@@ -37,9 +37,9 @@ MACRO(FIND_G2O_LIBRARY MYLIBRARY MYLIBRARYNAME)
     /usr/local/lib64
     /usr/lib
     /usr/lib64
-    # /opt/local/lib
-    # /sw/local/lib
-    # /sw/lib
+    /opt/local/lib
+    /sw/local/lib
+    /sw/lib
     )
   
   FIND_LIBRARY(${MYLIBRARY}
@@ -61,9 +61,9 @@ MACRO(FIND_G2O_LIBRARY MYLIBRARY MYLIBRARYNAME)
     /usr/local/lib64
     /usr/lib
     /usr/lib64
-    # /opt/local/lib
-    # /sw/local/lib
-    # /sw/lib
+    /opt/local/lib
+    /sw/local/lib
+    /sw/lib
     )
   
   IF(NOT ${MYLIBRARY}_DEBUG)

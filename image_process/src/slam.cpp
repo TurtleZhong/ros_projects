@@ -102,6 +102,7 @@ int main( int argc, char** argv )
     //显示点云
 //    pcl::visualization::CloudViewer viewer("viewer");
     bool check_loop_closure = pd.getStringData("check_loop_closure")==string("yes");
+    cout << "check_loop_closure = " << check_loop_closure << endl;
 
     for ( currIndex=startIndex+1; currIndex<endIndex; currIndex++ )
     {
@@ -134,6 +135,7 @@ int main( int argc, char** argv )
             // 检测回环
             if (check_loop_closure)
             {
+                cout<<GREEN"add to optomization"<<endl;
                 checkNearbyLoops( keyframes, currFrame, globalOptimizer );
                 checkRandomLoops( keyframes, currFrame, globalOptimizer );
             }
@@ -260,7 +262,7 @@ CHECK_RESULT checkKeyframes( FRAME& f1, FRAME& f2, g2o::SparseOptimizer& opti, b
     // 向g2o中增加这个顶点与上一帧联系的边
     // 顶点部分
     // 顶点只需设定id即可
-    if (is_loops == false)
+    if (is_loops == false) //origin: false
     {
         g2o::VertexSE3 *v = new g2o::VertexSE3();
         v->setId( f2.frameID );
