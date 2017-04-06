@@ -27,6 +27,7 @@
 <keyframe_threshold>0.1</keyframe_threshold>
 <max_norm_lp>2.0</max_norm_lp>
 <check_loop_closure>yes</check_loop_closure>
-<nearby_loops>5</nearby_loops>
-<random_loops>5</random_loops>
+<nearby_loops>10</nearby_loops>
+<random_loops>10</random_loops>
+<prior_loops>15</prior_loops>
 </opencv_storage>

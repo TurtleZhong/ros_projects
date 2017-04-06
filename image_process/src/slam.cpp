@@ -41,6 +41,7 @@ CHECK_RESULT checkKeyframes( FRAME& f1, FRAME& f2, g2o::SparseOptimizer& opti, b
 void checkNearbyLoops( vector<FRAME>& frames, FRAME& currFrame, g2o::SparseOptimizer& opti );
 // 随机检测回环
 void checkRandomLoops( vector<FRAME>& frames, FRAME& currFrame, g2o::SparseOptimizer& opti );
+void checkPriorLoops( vector<FRAME>& frames, FRAME& currFrame, g2o::SparseOptimizer& opti );
 
 int main( int argc, char** argv )
 {
@@ -69,7 +70,7 @@ int main( int argc, char** argv )
     {
         visualize = true;
     }
-//    bool visualize = pd.getData("visualize_pointcloud")==string("yes");
+    //    bool visualize = pd.getData("visualize_pointcloud")==string("yes");
 
 
     /*******************************
@@ -100,10 +101,12 @@ int main( int argc, char** argv )
     //double keyframe_threshold = atof( pd.getData("keyframe_threshold").c_str() );
 
     //显示点云
-//    pcl::visualization::CloudViewer viewer("viewer");
-    bool check_loop_closure = pd.getStringData("check_loop_closure")==string("yes");
+    //    pcl::visualization::CloudViewer viewer("viewer");
+    //bool check_loop_closure = pd.getStringData("check_loop_closure")==string("yes");
+    bool check_loop_closure = true;
     cout << "check_loop_closure = " << check_loop_closure << endl;
 
+    sleep(3);
     for ( currIndex=startIndex+1; currIndex<endIndex; currIndex++ )
     {
         cout<<"Reading files "<<currIndex<<endl;
@@ -137,7 +140,9 @@ int main( int argc, char** argv )
             {
                 cout<<GREEN"add to optomization"<<endl;
                 checkNearbyLoops( keyframes, currFrame, globalOptimizer );
-                checkRandomLoops( keyframes, currFrame, globalOptimizer );
+                checkPriorLoops ( keyframes, currFrame, globalOptimizer );
+                //checkRandomLoops( keyframes, currFrame, globalOptimizer );
+
             }
             keyframes.push_back( currFrame );
             cout << "The index of KeyFrame is " << keyframes.size() << endl;
@@ -154,7 +159,7 @@ int main( int argc, char** argv )
     cout<<RESET"optimizing pose graph, vertices: "<<globalOptimizer.vertices().size()<<endl;
     globalOptimizer.save("/home/m/ws/src/ros_projects/image_process/g2o/result_before.g2o");
     globalOptimizer.initializeOptimization();
-    globalOptimizer.optimize( 100 ); //可以指定优化步数
+    globalOptimizer.optimize( 249 ); //可以指定优化步数
     globalOptimizer.save( "/home/m/ws/src/ros_projects/image_process/g2o/result_after.g2o" );
     cout<<"Optimization done."<<endl;
 
@@ -205,8 +210,8 @@ FRAME readFrame( int index, PARAM_READER& pd )
     string rgbDir   =   pd.getStringData("rgb_dir");
     string depthDir =   pd.getStringData("depth_dir");
 
-//    string rgbExt   =   pd.getStringData("rgb_extension");
-//    string depthExt =   pd.getStringData("depth_extension");
+    //    string rgbExt   =   pd.getStringData("rgb_extension");
+    //    string depthExt =   pd.getStringData("depth_extension");
 
     string rgbExt   =   ".png";
     string depthExt =   ".png";
@@ -341,4 +346,29 @@ void checkRandomLoops( vector<FRAME>& frames, FRAME& currFrame, g2o::SparseOptim
             checkKeyframes( frames[index], currFrame, opti, true );
         }
     }
+}
+
+void checkPriorLoops( vector<FRAME>& frames, FRAME& currFrame, g2o::SparseOptimizer& opti )
+{
+    static PARAM_READER pd;
+    static int prior_loops = pd.getIntData("prior_loops");
+    //srand( (unsigned int) time(NULL) );
+    // 随机取一些帧进行检测
+
+    if ( frames.size() <= prior_loops )
+    {
+        // no enough keyframes, check everyone
+        for (size_t i=0; i<frames.size(); i++)
+        {
+            checkKeyframes( frames[i], currFrame, opti, true );
+        }
+    }
+    else
+    {
+        for (size_t i=0; i< prior_loops; i++)
+        {
+            checkKeyframes( frames[i], currFrame, opti, true );
+        }
+    }
+
 }
